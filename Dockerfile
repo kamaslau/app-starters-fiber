@@ -1,4 +1,6 @@
-FROM golang:alpine AS base
+ARG IMAGE_TAG="alpine"
+FROM golang:${IMAGE_TAG} AS base
+# FROM golang:alpine AS base
 WORKDIR /app
 # [Optional] Setup Mirror for Mainland China
 # RUN go env -w GOPROXY=https://goproxy.cn,direct # 七牛云
@@ -8,7 +10,7 @@ FROM base AS builder
 COPY . .
 RUN go mod tidy
 RUN go mod verify
-RUN go build -o ./tmp/main ./src
+RUN go build -o ./tmp/main ./src/cmd
 
 FROM base AS runner
 COPY --from=builder /app/tmp/main ./

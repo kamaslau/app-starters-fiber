@@ -1,7 +1,11 @@
 # trial-fiber
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![GitHub top language](https://img.shields.io/github/languages/top/kamaslau/trial-fiber)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kamaslau/trial-fiber)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/kamaslau/chinese_regions)
 ![Repository size](https://img.shields.io/github/repo-size/kamaslau/trial-fiber?color=56BEB8)
+![GitHub Repo stars](https://img.shields.io/github/stars/kamaslau/chinese_regions)
 
 Template [Fiber framework](https://docs.gofiber.io/) project for fast prototyping, trial, or micro-service unit usage.
 
@@ -29,6 +33,7 @@ go env GOPROXY # Double check
 ### RESTful
 
 - Root: http://127.0.0.1:3000/api/v1/
+- Health Check: http://127.0.0.1:3000/health
 - Demo with _Posts_ model: http://127.0.0.1:3000/api/v1/post
 
 ### GraphQL (TODO)
@@ -51,39 +56,49 @@ Create a `trial-fiber` database (you can use another name, just config it in the
 
 ```bash
 # Create .env file
-cp .env.sample .env # at least specify a database connection info
-
-# Install dependencies
-go get ./...
+cp .env.example .env # at least specify a database connection info
 
 # [Optional] Update dependencies
 go get -u ./...
+
+# Install Dependencies
 go mod tidy
 ```
 
 ### Run
+
 Without live-reloading
+
 ```bash
-go run ./src/...
+# Main.main
+go run ./src/cmd/main.go
+
+# Tools (database migration, etc.)
+go run ./src/cmd/tools/database.go # w/o seeding
+go run ./src/cmd/tools/database.go -s # w/ seeding
+go run ./src/cmd/tools/database.go --Seeding
 ```
+
 With live-reloading (via air-verse/air)
+
 ```bash
 # Install Air
 go install github.com/air-verse/air@latest
 
 # Run with
-air # Linux/macOS
+air # Linux/macOS, default
 air -c .air.windows.toml # Windows
 
 ```
-For more detailed instructions, e.g. solutions on working cross OS, checkout [https://manual.kamaslau.com/golang/tools/air.html](https://manual.kamaslau.com/golang/tools/air.html).
 
+For more detailed instructions, e.g. solutions on working cross OS, checkout [https://manual.kamaslau.com/golang/tools/air.html](https://manual.kamaslau.com/golang/tools/air.html).
 
 ### Compile
 
-Remember to put a .env file in to the same directory with the executable file compiled
+To make envarionment variables work, a .env file needs to co-exist in the same directory with the executable file compiled.
+
 ```bash
-go build -o ./dist/main ./src
+go build -o ./tmp/main ./src
 
 ```
 

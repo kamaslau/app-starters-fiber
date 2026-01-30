@@ -1,31 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Gateway</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="favicon-gopher.png" sizes="any">
+    <title>401</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="darkred"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#ffbb4d"
+    />
+    <link rel="icon" href="favicon-zap.png" sizes="any" />
     <style>
+      :root {
+        --primary-foreground: #cfcfcf;
+        --primary-background: darkred;
+        --secondary-foreground: #fff;
+        --secondary-background: #ffbb4d;
+        --font-serif: "New York", "Noto Serif", serif;
+        --font-sans:
+          "SF Pro SC", "SF Pro Text", "SF Pro Icons", "PingFang SC", "SF Pro",
+          "Helvetica Neue", "Helvetica", "MiSans", "Noto Sans", sans-serif;
+        --font-monospace:
+          "JetBrains Mono", "SF Mono", "Noto Sans Mono", monospace;
+      }
+
       body {
-        color:white;background-color:darkred;text-align:center;
-        width:100vw;height:100vh;margin:0;
-        display:flex;flex-direction: column;align-items:center;justify-content: center;
+        font-family: var(--font-serif);
+        color: var(--primary-foreground);
+        background-color: var(--primary-background);
+        text-align: center;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      h1 {
+        font-family: var(--font-sans);
+        color: var(--secondary-foreground);
+      }
+
+      a {
+        font-family: var(--font-sans);
+        color: var(--secondary-foreground);
+        text-decoration: underline wavy var(--secondary-background);
+      }
+
+      strong {
+        font-family: var(--font-monospace);
+        color: var(--secondary-foreground);
+        text-decoration: underline double var(--secondary-background);
       }
     </style>
+
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById("user-info").innerText = navigator.userAgent+"\n";
+      const renderH1 = () => {
+        const h1Dict = {
+          CN: "禁止入内",
+          US: "No Entry",
+          JP: "立入禁止",
+        };
+
+        const lang = navigator.language.toUpperCase();
+        for (const key in h1Dict) {
+          if (lang.includes(key)) {
+            document.querySelector("h1").innerText = h1Dict[key];
+            return;
+          }
+        }
+      };
+
+      const renderUserAgent = () => {
+        document.getElementById("user-info").innerText =
+          navigator.userAgent + "\n";
         document.getElementById("user-info").innerText += navigator.language;
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        renderH1();
+        renderUserAgent();
       });
     </script>
   </head>
 
   <body>
     <h1>Gateway</h1>
-    <p>
-      🛑 You are <strong>NOT</strong> allowed to visit, crawl, or with any approcach
-      exploit this service without dedicated permission/authorization.
-    </p>
-    <p id="user-info">Loading Browser Info</p>
+
+    <section>
+      <p>
+        🛑 You are <strong>NOT</strong> allowed to visit, crawl, or with any
+        approcach exploit this service without dedicated
+        permission/authorization.
+      </p>
+      <p id="user-info">Loading Browser Info</p>
+    </section>
+
+    <section>
+      <p>
+        Gladly powered by
+        <a href="https://zigzap.org/" target="_blank" rel="external noreferrer"
+          >zap@v0.11.0</a
+        >
+        on
+        <a href="https://ziglang.org/" target="_blank" rel="external noreferrer"
+          >zig@v0.15.2</a
+        >
+      </p>
+    </section>
   </body>
 </html>
