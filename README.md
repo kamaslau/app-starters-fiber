@@ -1,13 +1,13 @@
-# trial-fiber
+# app-starters-fiber
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![GitHub top language](https://img.shields.io/github/languages/top/kamaslau/trial-fiber)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kamaslau/trial-fiber)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/kamaslau/chinese_regions)
-![Repository size](https://img.shields.io/github/repo-size/kamaslau/trial-fiber?color=56BEB8)
-![GitHub Repo stars](https://img.shields.io/github/stars/kamaslau/chinese_regions)
+![GitHub top language](https://img.shields.io/github/languages/top/kamaslau/app-starters-fiber)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kamaslau/app-starters-fiber)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/kamaslau/app-starters-fiber)
+![Repository size](https://img.shields.io/github/repo-size/kamaslau/app-starters-fiber?color=56BEB8)
+![GitHub Repo stars](https://img.shields.io/github/stars/kamaslau/app-starters-fiber)
 
-Template [Fiber framework](https://docs.gofiber.io/) project for fast prototyping, trial, or micro-service unit usage.
+A Go app starter on [Fiber](https://docs.gofiber.io/): routing, config, GORM migrations, a Redis cache, a NATS queue and a health check, already wired to each other. Start here when the service is small and its shape is still open.
 
 Make sure that you have [Golang](https://go.dev/) installed already.
 
@@ -52,7 +52,7 @@ http://127.0.0.1:3000/graphql/ \
 
 ## Usage
 
-Create a `trial-fiber` database (you can use another name, just config it in the `.env` file) in PostgreSQL/MySQL/MariaDB of yours, then follow these steps below.
+Create an `app-starters-fiber` database (you can use another name, just config it in the `.env` file) in PostgreSQL/MySQL/MariaDB of yours, then follow these steps below.
 
 ```bash
 # Create .env file
@@ -105,21 +105,27 @@ go build -o ./tmp/main ./src
 ## Deploy (via docker)
 
 ```bash
-docker build . -t trial-fiber:latest
+docker build . -t app-starters-fiber:latest
 
-docker network create trial-backend && \
-docker stop trial-fiber && \
-docker rm trial-fiber && \
-docker run --name trial-fiber --network trial-backend -p 3000:3000 -d --restart always --net=host trial-fiber:latest
+docker network create app-starters-backend && \
+docker stop app-starters-fiber && \
+docker rm app-starters-fiber && \
+docker run --name app-starters-fiber --network app-starters-backend -p 3000:3000 -d --restart always --net=host app-starters-fiber:latest
 ```
 
 Make sure that other service components (database, cache, MQ, etc.) are within the same network, e.g.,
 
 ```bash
-docker network connect trial-backend trial-fiber
-docker network connect trial-backend database-xxx
-docker network connect trial-backend mq-xxx
+docker network connect app-starters-backend app-starters-fiber
+docker network connect app-starters-backend database-xxx
+docker network connect app-starters-backend mq-xxx
 ```
+
+## Use this template
+
+*Use this template* gives you a repository you own, with no history and no link back here — the right shape for
+the first commit of a real app. Clone it instead when you want to follow changes to the starter itself;
+a repository created from the template never receives them.
 
 ## References/Credits
 
