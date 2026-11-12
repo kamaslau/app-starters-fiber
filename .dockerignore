@@ -4,7 +4,7 @@ tmp
 .air.toml
 .air.windows.toml
 .dockerignore
-.env.sample
+.env.example
 .gitignore
 Dockerfile
 LICENSE
