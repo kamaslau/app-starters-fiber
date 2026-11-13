@@ -10,15 +10,18 @@ FROM base AS builder
 COPY . .
 RUN go mod tidy
 RUN go mod verify
-RUN go build -o ./tmp/main ./src/cmd
+# The entry point is src/main.go, so the package to build is ./src
+RUN go build -o ./tmp/main ./src
 
-FROM base AS runner
-COPY --from=builder /app/tmp/main ./
-COPY public ./public
-COPY .env ./
-# 验证 .env 文件内容
-RUN echo "=== .env file content ===" && cat .env && echo "=== End of .env file ==="
+FROM alpine:3 AS runner
+WORKDIR /app
+RUN apk add --no-cache ca-certificates tzdata
 
+COPY --from=builder /app/tmp/main ./main
+COPY --from=builder /app/public ./public
+
+# Configuration arrives at run time: docker run --env-file .env …
+# Baking .env into the image hides a missing variable until the next rebuild.
 EXPOSE 3000
 
 CMD ["./main"]
