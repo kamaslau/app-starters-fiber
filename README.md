@@ -71,12 +71,12 @@ Without live-reloading
 
 ```bash
 # Main.main
-go run ./src/cmd/main.go
+go run ./src
 
 # Tools (database migration, etc.)
-go run ./src/cmd/tools/database.go # w/o seeding
-go run ./src/cmd/tools/database.go -s # w/ seeding
-go run ./src/cmd/tools/database.go --Seeding
+go run ./src/tools/database.go # w/o seeding
+go run ./src/tools/database.go -s # w/ seeding
+go run ./src/tools/database.go --Seeding
 ```
 
 With live-reloading (via air-verse/air)
@@ -102,16 +102,47 @@ go build -o ./tmp/main ./src
 
 ```
 
+## Verify
+
+```bash
+curl -s http://127.0.0.1:3000/health
+# {"status":"ok","time":{"timezone":"…","offset":…,"unix":…}}
+```
+
+`status: ok` means the process is listening and routing. The rest of the app needs more than that: `/api/v1/post` goes through GORM to the database, so a `500` there with a healthy `/health` is a connection string, not a route.
+
+```bash
+curl -s http://127.0.0.1:3000/api/v1/post | head -c 200
+```
+
+An empty array is a working chain — database reached, table empty. `dial tcp …: connect: connection refused` in the log means `DB_DSN` points at a database that is not running, which `/health` will not tell you.
+
+## Why this shape
+
+Four dependencies — database, Redis, NATS, InfluxDB — are wired in `drivers.InitDrivers()`, in that order, because a starter that ships a `Post` model with no cache and no queue is a starter every project immediately edits. `InitDrivers` fails loudly at startup rather than lazily on first use: the failure you want is at boot, while you are still watching, not three requests later.
+
+Fiber v3 rather than v2 is deliberate: the handler signature (`func(c fiber.Ctx) error`) and the middleware model are what a new project will be built against for the next few years, and a starter pinned to the old major teaches the wrong API.
+
+The database tooling is a second binary (`src/tools/database.go`), not a flag on the server. Migrations run in CI, on a deploy host, or by hand during a handover — never as a side effect of a web process starting, which is how two instances race the same migration.
+
+`src/main.go` is the only entry point, and it is four calls: load env, init drivers, mount routes, listen. Everything else is in `internal/`, which is what stops the directory from becoming a debate.
+
 ## Deploy (via docker)
 
 ```bash
 docker build . -t app-starters-fiber:latest
 
 docker network create app-starters-backend && \
-docker stop app-starters-fiber && \
-docker rm app-starters-fiber && \
-docker run --name app-starters-fiber --network app-starters-backend -p 3000:3000 -d --restart always --net=host app-starters-fiber:latest
+docker stop app-starters-fiber 2>/dev/null; \
+docker rm app-starters-fiber 2>/dev/null; \
+docker run --name app-starters-fiber \
+  --network app-starters-backend \
+  --env-file .env \
+  -p 3000:3000 -d --restart unless-stopped \
+  app-starters-fiber:latest
 ```
+
+The image does not contain `.env`: configuration is passed at run time with `--env-file`, so a missing variable is visible in `docker run` rather than frozen into a layer. `--net=host` is not used — on Docker Desktop it does not publish the port to the host at all, and on Linux it makes `-p` a no-op that silently does nothing.
 
 Make sure that other service components (database, cache, MQ, etc.) are within the same network, e.g.,
 
